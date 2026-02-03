@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>感情作曲テスト</title>
+<style>
+body{
+  margin:0;
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  transition: background 2s;
+  background:#333;
+  color:white;
+  font-family:sans-serif;
+}
+textarea{
+  width:300px;
+  height:120px;
+  font-size:16px;
+}
+button{
+  font-size:18px;
+  margin-top:10px;
+}
+</style>
+</head>
+<body>
+
+<div>
+  <h2>🎵 感情作曲テスト</h2>
+  <textarea id="lyrics" placeholder="楽しい、悲しい など入力"></textarea><br>
+  <button id="play">作曲</button>
+</div>
+
+<script>
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+document.getElementById("play").addEventListener("click", async ()=>{
+  await audioCtx.resume(); // ← これが超重要！！！
+
+  const text = document.getElementById("lyrics").value;
+
+  let freq = 220;
+  let bg = "#555";
+
+  if(text.includes("楽しい")){
+    freq = 440;
+    bg = "linear-gradient(135deg,#ffe259,#ffa751)";
+  }
+  if(text.includes("悲しい")){
+    freq = 180;
+    bg = "linear-gradient(135deg,#2c3e50,#4b6cb7)";
+  }
+
+  document.body.style.background = bg;
+
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.frequency.value = freq;
+  gain.gain.value = 0.15;
+
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+
+  osc.start();
+  osc.stop(audioCtx.currentTime + 1);
+});
+</script>
+
+</body>
+</html>
